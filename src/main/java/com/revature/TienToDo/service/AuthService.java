@@ -1,9 +1,11 @@
 package com.revature.TienToDo.service;
 
 import com.revature.TienToDo.dto.AuthResponse;
+import com.revature.TienToDo.dto.LoginRequest;
 import com.revature.TienToDo.dto.RegisterRequest;
 import com.revature.TienToDo.entity.User;
 import com.revature.TienToDo.repository.UserRepository;
+import com.revature.TienToDo.utility.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,36 @@ public class AuthService {
         // Generate JWT and build response
         String token = jwtUtil.generateToken(user.getUsername());
         return new AuthResponse(token, user.getId(), user.getUsername(), user.getEmail());
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        // Spring Security verifies username + password against BCrypt hash
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(), request.getPassword()));
+
+        // Authentication succeeded — load user and generate token
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String token = jwtUtil.generateToken(user.getUsername());
+        return new AuthResponse(token, user.getId(), user.getUsername(), user.getEmail());
+    }
+
+    public AuthResponse refreshAccessToken(String refreshToken) {
+        if (!jwtUtil.isTokenValid(refreshToken)) {
+            throw new IllegalArgumentException("Invalid or expired refresh token");
+        }
+        if (!jwtUtil.isRefreshToken(refreshToken)) {
+            throw new IllegalArgumentException("Token is not a refresh token");
+        }
+
+        String username = jwtUtil.extractUsername(refreshToken);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String newAccessToken = jwtUtil.generateToken(user.getUsername());
+        return new AuthResponse(newAccessToken, user.getId(), user.getUsername(), user.getEmail());
     }
 
     @Transactional(readOnly = true)
