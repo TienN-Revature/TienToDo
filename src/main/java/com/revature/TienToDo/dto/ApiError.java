@@ -17,9 +17,6 @@ public class ApiError {
     @Builder.Default
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    /**
-     * Convenience constructor (timestamp auto-set to now).
-     */
     public ApiError(int status, String message) {
         this.status = status;
         this.message = message;
