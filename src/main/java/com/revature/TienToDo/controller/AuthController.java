@@ -22,6 +22,7 @@ public class AuthController {
     private AuthService authService;
 
     @Autowired
+
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")

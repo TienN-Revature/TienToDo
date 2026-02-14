@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@Component
 public class JwtUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
@@ -44,8 +45,8 @@ public class JwtUtil {
     public void init() {
         if (jwtSecret == null || jwtSecret.length() < 32) {
             throw new IllegalArgumentException(
-                    "JWT secret must be at least 32 characters. " +
-                            "Current length: " + (jwtSecret == null ? 0 : jwtSecret.length()));
+                    "JWT secret must be at least 32 characters. " + "Current length: "
+                    + (jwtSecret == null ? 0 : jwtSecret.length()));
         }
         this.signingKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         logger.info("JWT signing key initialized (issuer: {}, access TTL: {}ms, refresh TTL: {}ms)",
@@ -160,7 +161,7 @@ public class JwtUtil {
             if (isTokenExpired(token)) {
                 return "Token has expired";
             }
-            return null; // valid
+            return null;
         } catch (ExpiredJwtException e) {
             return "Token has expired";
         } catch (SecurityException e) {
