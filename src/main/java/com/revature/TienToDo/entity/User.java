@@ -50,9 +50,11 @@ public class User {
     private String passwordHash;
 
     @Column(name = "created_at", nullable = false, columnDefinition = "TEXT")
+    @Convert(converter = com.revature.TienToDo.config.SQLiteLocalDateTimeConverter.class)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at", nullable = false, columnDefinition = "TEXT")
+    @Convert(converter = com.revature.TienToDo.config.SQLiteLocalDateTimeConverter.class)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
