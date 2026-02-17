@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
@@ -32,14 +33,15 @@ public class AuthController {
         // Generate a refresh token alongside the access token
         String refreshToken = jwtUtil.generateRefreshToken(response.getUsername());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                "token", response.getToken(),
-                "refreshToken", refreshToken,
-                "type", response.getType(),
-                "userId", response.getUserId(),
-                "username", response.getUsername(),
-                "email", response.getEmail()
-        ));
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("token", response.getToken());
+        body.put("refreshToken", refreshToken);
+        body.put("type", response.getType());
+        body.put("userId", response.getUserId());
+        body.put("username", response.getUsername());
+        body.put("email", response.getEmail());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
     @PostMapping("/login")
@@ -49,14 +51,15 @@ public class AuthController {
         // Generate a refresh token alongside the access token
         String refreshToken = jwtUtil.generateRefreshToken(response.getUsername());
 
-        return ResponseEntity.ok(Map.of(
-                "token", response.getToken(),
-                "refreshToken", refreshToken,
-                "type", response.getType(),
-                "userId", response.getUserId(),
-                "username", response.getUsername(),
-                "email", response.getEmail()
-        ));
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("token", response.getToken());
+        body.put("refreshToken", refreshToken);
+        body.put("type", response.getType());
+        body.put("userId", response.getUserId());
+        body.put("username", response.getUsername());
+        body.put("email", response.getEmail());
+
+        return ResponseEntity.ok(body);
     }
 
     @PostMapping("/refresh")
@@ -68,12 +71,14 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<Map<String, Object>> getCurrentUser(Authentication auth) {
         User user = authService.getUserByUsername(auth.getName());
-        return ResponseEntity.ok(Map.of(
-                "userId", user.getId(),
-                "username", user.getUsername(),
-                "email", user.getEmail(),
-                "createdAt", user.getCreatedAt().toString()
-        ));
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("userId", user.getId());
+        body.put("username", user.getUsername());
+        body.put("email", user.getEmail());
+        body.put("createdAt", user.getCreatedAt().toString());
+
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping("/me/stats")
@@ -84,12 +89,13 @@ public class AuthController {
         long active = total - completed;
         double completionRate = total > 0 ? Math.round((double) completed / total * 1000.0) / 10.0 : 0.0;
 
-        return ResponseEntity.ok(Map.of(
-                "totalTodos", total,
-                "completedTodos", completed,
-                "activeTodos", active,
-                "completionRate", completionRate
-        ));
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("totalTodos", total);
+        body.put("completedTodos", completed);
+        body.put("activeTodos", active);
+        body.put("completionRate", completionRate);
+
+        return ResponseEntity.ok(body);
     }
 
 }
